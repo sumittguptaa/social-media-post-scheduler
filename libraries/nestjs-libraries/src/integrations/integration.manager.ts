@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 import { Injectable } from '@nestjs/common';
 import { XProvider } from '@gitroom/nestjs-libraries/integrations/social/x.provider';
+import { XCookieProvider } from '@gitroom/nestjs-libraries/integrations/social/x.cookie.provider';
 import { SocialProvider } from '@gitroom/nestjs-libraries/integrations/social/social.integrations.interface';
 import { LinkedinProvider } from '@gitroom/nestjs-libraries/integrations/social/linkedin.provider';
 import { RedditProvider } from '@gitroom/nestjs-libraries/integrations/social/reddit.provider';
@@ -39,6 +40,7 @@ import { MeweProvider } from '@gitroom/nestjs-libraries/integrations/social/mewe
 
 export const socialIntegrationList: Array<SocialAbstract & SocialProvider> = [
   new XProvider(),
+  new XCookieProvider(),
   new LinkedinProvider(),
   new LinkedinPageProvider(),
   new RedditProvider(),

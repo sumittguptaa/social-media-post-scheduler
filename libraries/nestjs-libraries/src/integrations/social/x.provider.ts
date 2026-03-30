@@ -58,6 +58,13 @@ export class XProvider extends SocialAbstract implements SocialProvider {
         value: 'Posting failed - capped reached. Please try again later',
       };
     }
+    if (body.includes('CreditsDepleted')) {
+      return {
+        type: 'bad-body',
+        value:
+          'Your X Developer API credits are depleted for this month. Please upgrade your X Developer plan or wait for the monthly reset.',
+      };
+    }
     if (body.includes('duplicate-rules')) {
       return {
         type: 'bad-body',

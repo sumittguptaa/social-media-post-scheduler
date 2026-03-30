@@ -288,6 +288,65 @@ const ExtensionNotFound: FC = () => {
   );
 };
 
+const XCookieInstructions: FC<{
+  onConfirm: () => void;
+  onCancel: () => void;
+}> = ({ onConfirm, onCancel }) => {
+  const modals = useModals();
+  const t = useT();
+  return (
+    <div className="flex flex-col gap-[16px] pt-[8px]">
+      <p className="text-[14px] text-textColor/80">
+        {t(
+          'x_cookie_intro',
+          'This method posts to X using your browser session cookies — no API key or credits required.'
+        )}
+      </p>
+      <div className="bg-newTableHeader rounded-[8px] p-[12px] flex flex-col gap-[8px]">
+        <p className="text-[13px] font-semibold text-textColor">
+          {t('x_cookie_how_to_get', 'How to get your cookies:')}
+        </p>
+        <ol className="flex flex-col gap-[6px] list-decimal ps-[18px] text-[13px] text-textColor/80">
+          <li>{t('x_cookie_step1', 'Open x.com in Chrome and log in to your account')}</li>
+          <li>{t('x_cookie_step2', 'Press F12 to open DevTools')}</li>
+          <li>{t('x_cookie_step3', 'Go to Application → Storage → Cookies → https://x.com')}</li>
+          <li>{t('x_cookie_step4', 'Find and copy the value of auth_token')}</li>
+          <li>{t('x_cookie_step5', 'Find and copy the value of ct0')}</li>
+          <li>{t('x_cookie_step6', 'Paste both values in the form on the next screen')}</li>
+        </ol>
+      </div>
+      <ul className="flex flex-col gap-[6px] list-disc ps-[20px] text-[13px] text-textColor/60">
+        <li>{t('x_cookie_warn1', 'Cookies expire in ~30 days — you may need to reconnect periodically')}</li>
+        <li>{t('x_cookie_warn2', 'This method may violate X\'s Terms of Service')}</li>
+        <li>{t('x_cookie_warn3', 'Your cookies are stored encrypted and never shared')}</li>
+        <li>{t('x_cookie_warn4', 'Postiz is not responsible for any account actions taken by X')}</li>
+      </ul>
+      <div className="flex gap-[10px] mt-[4px]">
+        <Button
+          type="button"
+          className="flex-1"
+          onClick={() => {
+            modals.closeCurrent();
+            onConfirm();
+          }}
+        >
+          {t('i_understand_continue', 'I understand, continue')}
+        </Button>
+        <Button
+          type="button"
+          className="flex-1 !bg-transparent border border-tableBorder text-textColor"
+          onClick={() => {
+            modals.closeCurrent();
+            onCancel();
+          }}
+        >
+          {t('cancel', 'Cancel')}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 const ChromeExtensionWarning: FC<{
   onConfirm: () => void;
   onCancel: () => void;
@@ -585,6 +644,22 @@ export const AddProviderComponent: FC<{
           return;
         }
         if (customFields) {
+          if (identifier === 'x-cookie') {
+            const confirmed = await new Promise<boolean>((resolve) => {
+              modal.openModal({
+                title: t('x_cookie_modal_title', 'Connect X via Cookies'),
+                withCloseButton: true,
+                onClose: () => resolve(false),
+                children: (
+                  <XCookieInstructions
+                    onConfirm={() => resolve(true)}
+                    onCancel={() => resolve(false)}
+                  />
+                ),
+              });
+            });
+            if (!confirmed) return;
+          }
           modal.openModal({
             title: t('add_provider_title', 'Add Provider'),
             withCloseButton: true,
